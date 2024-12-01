@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\PhoneCountryMatch;
+use App\Rules\ValidPhoneNumber;
+use App\Services\PhoneNumberServiceInterface;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -9,12 +12,17 @@ use Illuminate\Validation\Rule;
 
 class GuestRequest extends FormRequest
 {
+    private PhoneNumberServiceInterface $phoneNumberService;
+
     /**
-     * Determine if the user is authorized to make this request.
+     * Create a new GuestRequest instance.
+     *
+     * @param PhoneNumberServiceInterface $phoneNumberService Service to handle phone number operations.
      */
-    public function authorize(): bool
+    public function __construct(PhoneNumberServiceInterface $phoneNumberService)
     {
-        return true;
+        parent::__construct();
+        $this->phoneNumberService = $phoneNumberService;
     }
 
     /**
@@ -24,21 +32,36 @@ class GuestRequest extends FormRequest
      */
     public function rules(): array
     {
-        $guestId = $this->route('guest');
+        $guest = $this->route('guest');
 
         return [
-            'first_name'   => 'required|string|max:255',
-            'last_name'    => 'required|string|max:255',
+            'first_name'   => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'last_name'    => [
+                'required',
+                'string',
+                'max:255',
+            ],
             'email'        => [
                 'required',
                 'email',
-                Rule::unique('guests', 'email')->ignore($guestId),
+                Rule::unique('guests', 'email')->ignore($guest),
             ],
             'phone_number' => [
                 'required',
-                Rule::unique('guests', 'phone_number')->ignore($guestId),
+                'string',
+                'starts_with:+',
+                Rule::unique('guests', 'phone_number')->ignore($guest),
+                new ValidPhoneNumber($this->phoneNumberService),
             ],
-            'country_code' => 'nullable|string|max:2',
+            'country_code' => [
+                'nullable',
+                'string',
+                'max:2',
+            ],
         ];
     }
 
@@ -46,6 +69,7 @@ class GuestRequest extends FormRequest
      * Handle a failed validation attempt.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     *
      * @return void
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -53,9 +77,29 @@ class GuestRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'success' => false,
             'message' => 'Validation errors',
             'data'    => $validator->errors()
         ], 422));
+    }
+
+    /**
+     * Modify validation rules dynamically after initial setup.
+     *
+     * @param  Illuminate\Contracts\Validation\Validator  $validator
+     *
+     * @return void
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->sometimes(
+            'country_code',
+            new PhoneCountryMatch(
+                $this->phoneNumberService,
+                $this->input('country_code')
+            ),
+            function ($input) use ($validator) {
+                return $validator->errors()->missing(['phone_number', 'country_code']);
+            }
+        );
     }
 }
