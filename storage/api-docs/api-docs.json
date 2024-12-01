@@ -301,7 +301,7 @@
                         "example": "john.doe@example.com"
                     },
                     "phone_number": {
-                        "description": "Must be a valid phone number.",
+                        "description": "Must start with + and be a valid phone number.",
                         "type": "string",
                         "example": "+1234567890"
                     },
