@@ -9,18 +9,18 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class PhoneCountryMatch implements ValidationRule
 {
     private PhoneNumberServiceInterface $phoneNumberService;
-    private ?string $passedCountryCode;
+    private string $passedPhoneNumber;
 
     /**
      * Create a new PhoneCountryMatch instance.
      *
      * @param PhoneNumberServiceInterface $phoneNumberService
-     * @param string|null $passedCountryCode
+     * @param string|null $passedPhoneNumber
      */
-    public function __construct(PhoneNumberServiceInterface $phoneNumberService, ?string $passedCountryCode)
+    public function __construct(PhoneNumberServiceInterface $phoneNumberService, string $passedPhoneNumber)
     {
         $this->phoneNumberService = $phoneNumberService;
-        $this->passedCountryCode = $passedCountryCode;
+        $this->passedPhoneNumber = $passedPhoneNumber;
     }
 
     /**
@@ -34,11 +34,11 @@ class PhoneCountryMatch implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (empty($this->passedCountryCode)) {
+        if (empty($value)) {
             return;
         }
 
-        if ($this->passedCountryCode !== $this->phoneNumberService->getCountryCode($value)) {
+        if ($value !== $this->phoneNumberService->getCountryCode($this->passedPhoneNumber)) {
             $fail('The passed country code does not match the country code of the passed phone number.');
         }
     }

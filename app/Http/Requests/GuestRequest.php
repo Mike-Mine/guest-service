@@ -110,7 +110,7 @@ class GuestRequest extends FormRequest
             'country_code',
             new PhoneCountryMatch(
                 $this->phoneNumberService,
-                $this->input('country_code')
+                $this->input('phone_number')
             ),
             function ($input) use ($validator) {
                 return $validator->errors()->missing(['phone_number', 'country_code']);
