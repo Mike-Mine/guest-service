@@ -10,6 +10,21 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
+/**
+ * @OA\Schema(
+ *     schema="GuestRequest",
+ *     type="object",
+ *     title="Guest Request",
+ *     required={"first_name", "last_name", "email", "phone_number"},
+ *     properties={
+ *         @OA\Property(property="first_name", type="string", maxLength=255, example="John"),
+ *         @OA\Property(property="last_name", type="string", maxLength=255, example="Doe"),
+ *         @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *         @OA\Property(property="phone_number", type="string", example="+1234567890", description="Must be a valid phone number."),
+ *         @OA\Property(property="country_code", type="string", maxLength=2, nullable=true, example="US", description="Must match the phone number's country."),
+ *     }
+ * )
+ */
 class GuestRequest extends FormRequest
 {
     private PhoneNumberServiceInterface $phoneNumberService;
