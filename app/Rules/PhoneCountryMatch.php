@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class PhoneCountryMatch implements ValidationRule
 {
     private PhoneNumberServiceInterface $phoneNumberService;
-    private string $passedPhoneNumber;
+    private ?string $passedPhoneNumber;
 
     /**
      * Create a new PhoneCountryMatch instance.
@@ -17,7 +17,7 @@ class PhoneCountryMatch implements ValidationRule
      * @param PhoneNumberServiceInterface $phoneNumberService
      * @param string|null $passedPhoneNumber
      */
-    public function __construct(PhoneNumberServiceInterface $phoneNumberService, string $passedPhoneNumber)
+    public function __construct(PhoneNumberServiceInterface $phoneNumberService, ?string $passedPhoneNumber)
     {
         $this->phoneNumberService = $phoneNumberService;
         $this->passedPhoneNumber = $passedPhoneNumber;
