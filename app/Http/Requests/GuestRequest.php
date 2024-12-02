@@ -117,4 +117,23 @@ class GuestRequest extends FormRequest
             }
         );
     }
+
+    /**
+     * Get the validated data from the request, update the country code if not provided.
+     *
+     * @param  array|int|string|null  $key
+     * @param  mixed  $default
+     *
+     * @return mixed
+     */
+    public function validated($key = null, $default = null)
+    {
+        $validated = parent::validated($key, $default);
+
+        if (empty($validated['country_code'])) {
+            $validated['country_code'] = $this->phoneNumberService->getCountryCode($validated['phone_number']);
+        }
+
+        return $validated;
+    }
 }
