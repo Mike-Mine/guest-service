@@ -77,10 +77,6 @@ class GuestController extends Controller
     {
         $validated = $request->validated();
 
-        if (empty($validated['country_code'])) {
-            $validated['country_code'] = $this->phoneNumberService->getCountryCode($validated['phone_number']);
-        }
-
         $guest = Guest::create($validated);
 
         return response()->json($guest, 201);
