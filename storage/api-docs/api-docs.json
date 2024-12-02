@@ -228,7 +228,7 @@
                                             "type": "object",
                                             "example": {
                                                 "phone_number": [
-                                                    "The phone number must be valid."
+                                                    "The passed phone number does not seem to be a valid phone number."
                                                 ],
                                                 "email": [
                                                     "The email has already been taken."
@@ -281,7 +281,6 @@
                 "required": [
                     "first_name",
                     "last_name",
-                    "email",
                     "phone_number"
                 ],
                 "properties": {

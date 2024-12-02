@@ -15,7 +15,7 @@ use Illuminate\Validation\Rule;
  *     schema="GuestRequest",
  *     type="object",
  *     title="Guest Request",
- *     required={"first_name", "last_name", "email", "phone_number"},
+ *     required={"first_name", "last_name", "phone_number"},
  *     properties={
  *         @OA\Property(property="first_name", type="string", maxLength=255, example="John"),
  *         @OA\Property(property="last_name", type="string", maxLength=255, example="Doe"),
@@ -61,7 +61,7 @@ class GuestRequest extends FormRequest
                 'max:255',
             ],
             'email'        => [
-                'required',
+                'nullable',
                 'email',
                 Rule::unique('guests', 'email')->ignore($guest),
             ],

@@ -142,7 +142,7 @@ class GuestController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Validation errors"),
      *             @OA\Property(property="data", type="object", example={
-     *                 "phone_number": {"The phone number must be valid."},
+     *                 "phone_number": {"The passed phone number does not seem to be a valid phone number."},
      *                 "email": {"The email has already been taken."}
      *             })
      *         )
